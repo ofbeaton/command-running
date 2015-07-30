@@ -1,0 +1,46 @@
+{
+    "name": "ofbeaton/command-running",
+    "description": "Detects if a command or process is currently running.",
+    "keywords": ["console", "command", "pid", "kill"],
+    "homepage": "https://github.com/ofbeaton/command-running",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Finlay Beaton",
+            "email": "ofbeaton@gmail.com"
+        },
+        {
+            "name": "Command Running Community",
+            "homepage": "https://github.com/ofbeaton/command-running/graphs/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=5.4"        
+    },
+    "require-dev": {
+        "phing/phing": "^2.11",        
+        "squizlabs/php_codesniffer": "^2.3",
+        "mayflower/php-codebrowser": "^1.1",
+        "ofbeaton/granite": "^0"
+    },    
+    "autoload": {
+        "psr-4": {
+            "Ofbeaton\\Command\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ofbeaton\\Command\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
