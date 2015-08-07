@@ -135,16 +135,16 @@
         },
         {
             "name": "ofbeaton/granite",
-            "version": "0.3.0",
+            "version": "0.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ofbeaton/granite.git",
-                "reference": "c051267b5017391296784da8e25b4cae7162296a"
+                "reference": "19d2cfc3712da0f1d91f5360bea0126e7d2c0e40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ofbeaton/granite/zipball/c051267b5017391296784da8e25b4cae7162296a",
-                "reference": "c051267b5017391296784da8e25b4cae7162296a",
+                "url": "https://api.github.com/repos/ofbeaton/granite/zipball/19d2cfc3712da0f1d91f5360bea0126e7d2c0e40",
+                "reference": "19d2cfc3712da0f1d91f5360bea0126e7d2c0e40",
                 "shasum": ""
             },
             "require": {
@@ -178,7 +178,7 @@
                 "PHP_CodeSniffer",
                 "code sniffer"
             ],
-            "time": "2015-07-28 22:45:10"
+            "time": "2015-08-07 01:57:45"
         },
         {
             "name": "phing/phing",
@@ -431,16 +431,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.7.2",
+            "version": "v2.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "8cf484449130cabfd98dcb4694ca9945802a21ed"
+                "reference": "d6cf02fe73634c96677e428f840704bfbcaec29e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Console/zipball/8cf484449130cabfd98dcb4694ca9945802a21ed",
-                "reference": "8cf484449130cabfd98dcb4694ca9945802a21ed",
+                "url": "https://api.github.com/repos/symfony/Console/zipball/d6cf02fe73634c96677e428f840704bfbcaec29e",
+                "reference": "d6cf02fe73634c96677e428f840704bfbcaec29e",
                 "shasum": ""
             },
             "require": {
@@ -484,7 +484,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2015-07-09 16:07:40"
+            "time": "2015-07-28 15:18:12"
         }
     ],
     "aliases": [],

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="CommandRunning" default="all">
+
+    <target name="install">
+        <exec command="COMPOSER_PROCESS_TIMEOUT=4000 HTTP_PROXY_REQUEST_FULLURI=0 HTTPS_PROXY_REQUEST_FULLURI=0 php composer.phar install --prefer-dist" passthru="true"/>
+    </target>
+
+    <target name="update">
+        <exec command="COMPOSER_PROCESS_TIMEOUT=4000 HTTP_PROXY_REQUEST_FULLURI=0 HTTPS_PROXY_REQUEST_FULLURI=0 php composer.phar update --prefer-dist" passthru="true"/>
+    </target>
+
+    <target name="phpcs" description="Generate checkstyle.xml using PHP_CodeSniffer">
+        <exec executable="bin/phpcs" passthru="true">
+        </exec>
+        <exec executable="bin/phpcs" passthru="true">
+            <arg value="--report=checkstyle" />
+            <arg value="--report-file=logs/checkstyle.xml" />
+        </exec>
+    </target>
+
+    <target name="phpcbf" description="Code fixer using PHP_CodeSniffer">
+        <exec executable="bin/phpcbf" passthru="true">
+            <arg value="--no-patch" />
+        </exec>
+    </target>
+
+    <target name="phpcb" description="Aggregate tool output with PHP_CodeBrowser">
+        <exec executable="bin/phpcb" passthru="true">
+            <arg value="--log" /><arg path="logs" />
+            <arg value="--source" /><arg path="src" />
+            <arg value="--source" /><arg path="tests" />
+            <arg value="--output" /><arg path="build/browser" />
+        </exec>
+    </target>
+
+    <target name="clean" description="Remove temporary directories">
+        <delete dir="logs" />
+        <delete dir="build" />
+        <mkdir dir="logs" />
+        <mkdir dir="build" />
+    </target>
+
+    <target name="dist" description="Creates local copies of dist files">
+        <copy file="phpcs.xml.dist" tofile="phpcs.xml" />
+    </target>
+
+    <target name="checkstyle" depends="clean,phpcs,phpcb" />
+
+    <target name="fixstyle" depends="phpcbf" />
+
+    <target name="setup" depends="clean,dist" />
+
+    <target name="all" depends="clean,phpcbf,phpcs,phpcb" />
+
+</project>

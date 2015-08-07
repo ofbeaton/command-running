@@ -2,64 +2,103 @@
 
 namespace Ofbeaton\Command;
 
+/**
+ * Class RunningFilter
+ *
+ * @since 2015-07-30
+ */
 class RunningFilter
 {
 
+    /**
+     * @var array
+     * @since 2015-07-30
+     */
     protected $fields = [];
 
+    /**
+     * @var array
+     * @since 2015-07-30
+     */
     protected $mods = [];
 
+    /**
+     * @var array
+     * @since 2015-07-30
+     */
     protected $validFields = [
-                              'os',
-                              'pid',
-                              'user',
-                              'process',
+        'os',
+        'pid',
+        'user',
+        'process',
     ];
 
+    /**
+     * @var array
+     * @since 2015-07-30
+     */
     protected $validMods = [
-    'os' => [
-             '=',
-             '!',
-    ],
-    'pid' => [
-              '=',
-              '!',
-    ],
-    'user' => [
-               '=',
-               '!',
-    ],
-    'process' => [
-                  '=',
-                  '!',
-                  '~=',
-                  '~!',
-    ],
+        'os' => [
+            '=',
+            '!',
+        ],
+        'pid' => [
+            '=',
+            '!',
+        ],
+        'user' => [
+            '=',
+            '!',
+        ],
+        'process' => [
+            '=',
+            '!',
+            '~=',
+            '~!',
+        ],
     ];
 
+    /**
+     * @var array
+     * @since 2015-07-30
+     */
     protected $defaultMods = [
-    'os' => '=',
-    'pid' => '=',
-    'user' => '=',
-    'process' => '~=',
+        'os' => '=',
+        'pid' => '=',
+        'user' => '=',
+        'process' => '~=',
     ];
 
+    /**
+     * @var array
+     * @since 2015-07-30
+     */
     protected $autoRegEx = [
-    'os' => true,
-    'pid' => true,
-    'user' => true,
-    'process' => false,
+        'os' => true,
+        'pid' => true,
+        'user' => true,
+        'process' => false,
     ];
 
 
+    /**
+     * @param string $field Field.
+     * @param string $value Regex.
+     *
+     * @return string
+     * @throws \InvalidArgumentException Regex cannot contain space or tab.
+     *
+     * @since 2015-07-30
+     */
     protected function transform($field, $value)
     {
         if (strpos($value, '/') === 0) {
           // we got a regex
             if (strpos($value, ' ') !== false || strpos($value, "\t") !== false) {
-                throw new \InvalidArgumentException('Field `'.$field.'` regular expression cannot contain a space or tab. Use \s+ instead');
+                $error = 'Field `'.$field.'` regular expression cannot contain a space or tab. Use \s+ instead';
+                throw new \InvalidArgumentException($error);
             }
-        } elseif ($autoRegEx[$field] === true) {
+        } elseif ($this->autoRegEx[$field] === true) {
           // turn it into a regex
             if (in_array($this->mods[$field], ['=', '!']) === true) {
                 $value = '^'.$value.'$';
@@ -74,6 +113,14 @@ class RunningFilter
     }//end transform()
 
 
+    /**
+     * @param string $field Field.
+     *
+     * @return mixed Field value.
+     * @throws \InvalidArgumentException Invalid field.
+     *
+     * @since 2015-07-30
+     */
     public function getField($field)
     {
         if (in_array($field, $this->validFields) === false) {
@@ -86,6 +133,14 @@ class RunningFilter
     }//end getField()
 
 
+    /**
+     * @param string $field Field.
+     *
+     * @return mixed Mod applied to a given Field.
+     * @throws \InvalidArgumentException Invalid field.
+     *
+     * @since 2015-07-30
+     */
     public function getMod($field)
     {
         if (in_array($field, $this->validFields) === false) {
@@ -98,6 +153,16 @@ class RunningFilter
     }//end getMod()
 
 
+    /**
+     * @param string $field Field.
+     * @param string $value New value.
+     * @param string $mod   Mod for field.
+     *
+     * @return $this
+     * @throws \InvalidArgumentException Invalid field.
+     *
+     * @since 2015-07-30
+     */
     public function setField($field, $value, $mod = null)
     {
         if (in_array($field, $this->validFields) === false) {
@@ -119,6 +184,11 @@ class RunningFilter
     }//end setField()
 
 
+    /**
+     * @return mixed OS.
+     *
+     * @since 2015-07-30
+     */
     public function getOs()
     {
         $result = $this->getField('os');
@@ -126,6 +196,14 @@ class RunningFilter
     }//end getOs()
 
 
+    /**
+     * @param string $os  Value.
+     * @param string $mod Mod on OS field.
+     *
+     * @return $this
+     *
+     * @since 2015-07-30
+     */
     public function setOs($os, $mod = null)
     {
         $this->setField('os', $os, $mod);
@@ -133,6 +211,11 @@ class RunningFilter
     }//end setOs()
 
 
+    /**
+     * @return int Value of PID field.
+     *
+     * @since 2015-07-30
+     */
     public function getPid()
     {
         $result = $this->getField('pid');
@@ -140,6 +223,14 @@ class RunningFilter
     }//end getPid()
 
 
+    /**
+     * @param string $pid New Value.
+     * @param string $mod Mod on PID field.
+     *
+     * @return $this
+     *
+     * @since 2015-07-30
+     */
     public function setPid($pid, $mod = null)
     {
         $this->setField('pid', $pid, $mod);
@@ -147,6 +238,11 @@ class RunningFilter
     }//end setPid()
 
 
+    /**
+     * @return mixed Process.
+     *
+     * @since 2015-07-30
+     */
     public function getProcess()
     {
         $result = $this->getField('process');
@@ -154,6 +250,14 @@ class RunningFilter
     }//end getProcess()
 
 
+    /**
+     * @param string $process Process.
+     * @param string $mod     Mod.
+     *
+     * @return $this
+     *
+     * @since 2015-07-30
+     */
     public function setProcess($process, $mod = null)
     {
         $this->setField('process', $process, $mod);
@@ -161,6 +265,11 @@ class RunningFilter
     }//end setProcess()
 
 
+    /**
+     * @return mixed User.
+     *
+     * @since 2015-07-30
+     */
     public function getUser()
     {
         $result = $this->getField('user');
@@ -168,6 +277,14 @@ class RunningFilter
     }//end getUser()
 
 
+    /**
+     * @param string $user User.
+     * @param string $mod  Mod.
+     *
+     * @return $this
+     *
+     * @since 2015-07-30
+     */
     public function setUser($user, $mod = null)
     {
         $this->setField('user', $user, $mod);
@@ -175,7 +292,15 @@ class RunningFilter
     }//end setUser()
 
 
-    public function isOk($details)
+    /**
+     * @param array $details List of fields.
+     *
+     * @return boolean are the details valid.
+     * @throws \RuntimeException Missing field.
+     *
+     * @since 2015-07-30
+     */
+    public function isOk(array $details)
     {
         foreach ($this->validFields as $field) {
             if (isset($details[$field]) === false) {
@@ -189,6 +314,15 @@ class RunningFilter
     }//end isOk()
 
 
+    /**
+     * @param string $field       Field.
+     * @param mixed  $userValue   Value to check.
+     * @param mixed  $filterValue Filter to check value against.
+     *
+     * @return boolean
+     *
+     * @since 2015-07-30
+     */
     protected function match($field, $userValue, $filterValue)
     {
         if ($filterValue === null) {

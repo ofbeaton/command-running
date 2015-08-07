@@ -2,26 +2,57 @@
 
 namespace Ofbeaton\Command;
 
+/**
+ * Class Running
+ * @since 2015-07-30
+ */
 class Running
 {
 
-
+    /**
+     * @since 2015-07-30
+     */
     const OS_LINUX = 'linux';
 
+    /**
+     * @since 2015-07-30
+     */
     const OS_WINDOWS = 'windows';
 
+    /**
+     * @var array
+     * @since 2015-07-30
+     */
     protected $supportedOs = [
-                              self::OS_LINUX,
-                              self::OS_WINDOWS,
+        self::OS_LINUX,
+        self::OS_WINDOWS,
     ];
 
+    /**
+     * @var null
+     * @since 2015-07-30
+     */
     protected $os = null;
 
+    /**
+     * @var null
+     * @since 2015-07-30
+     */
     protected $osRaw = null;
 
+    /**
+     * @var null
+     * @since 2015-07-30
+     */
     protected $pidFile = null;
 
 
+    /**
+     * @param string $pidFile   Filename and path to PID file.
+     * @param string $unknownOs OS to use if detected an unknown OS.
+     *
+     * @since 2015-07-30
+     */
     public function __construct($pidFile = null, $unknownOs = self::OS_LINUX)
     {
         $this->detectOs($unknownOs);
@@ -29,12 +60,22 @@ class Running
     }//end __construct()
 
 
+    /**
+     * @return string OS
+     *
+     * @since 2015-07-30
+     */
     public function getOs()
     {
         return $this->os;
     }//end getOs()
 
 
+    /**
+     * @return boolean
+     *
+     * @since 2015-07-30
+     */
     public function isWindows()
     {
         if ($this->os === self::OS_WINDOWS) {
@@ -45,6 +86,11 @@ class Running
     }//end isWindows()
 
 
+    /**
+     * @return boolean
+     *
+     * @since 2015-07-30
+     */
     public function isLinux()
     {
         if ($this->os === self::OS_LINUX) {
@@ -55,25 +101,34 @@ class Running
     }//end isLinux()
 
 
+    /**
+     * @param string|null $unknownOs OS to use if OS is not supported.
+     *
+     * @return void
+     * @throws \InvalidArgumentException OS is not supported and no unknown OS specified.
+     *
+     * @since 2015-07-30
+     */
     protected function detectOs($unknownOs = self::OS_LINUX)
     {
-      /*
-          http://stackoverflow.com/questions/738823/possible-values-for-php-os
-          some possible values:
-          CYGWIN_NT-5.1
-          Darwin
-          FreeBSD
-          HP-UX
-          IRIX64
-          Linux
-          NetBSD
-          OpenBSD
-          SunOS
-          Unix
-          WIN32
-          WINNT
-          Windows
-      */
+        /*
+            Http://stackoverflow.com/questions/738823/possible-values-for-php-os
+            some possible values:
+            CYGWIN_NT-5.1
+            Darwin
+            FreeBSD
+            HP-UX
+            IRIX64
+            Linux
+            NetBSD
+            OpenBSD
+            SunOS
+            Unix
+            WIN32
+            WINNT
+            Windows
+        */
+
         $this->osRaw = php_uname('s');
 
         if ($this->osRaw === 'Linux') {
@@ -83,18 +138,27 @@ class Running
         } elseif ($unknownOs !== null && in_array($unknownOs, $this->supportedOs) === true) {
             $this->os = $unknownOs;
         } else {
-            throw new \InvalidArgumentException('unknownOs `'.$unknownOs.'` is not in list of supportedOs `'.implode(', ', $this->supportedOs));
+            $error = 'unknownOs `'.$unknownOs.'` is not in list of supportedOs `'.implode(', ', $this->supportedOs);
+            throw new \InvalidArgumentException($error);
         }
     }//end detectOs()
 
 
+    /**
+     * @param array $filters Filters.
+     *
+     * @return array
+     * @throws \InvalidArgumentException Filter value invalid.
+     *
+     * @since 2015-07-30
+     */
     protected function transformFilters(array $filters)
     {
         foreach ($filters as $key => $value) {
             if (is_string($value) === true) {
                 $filters[$key] = new RunningFilter();
                 $filters[$key]->setProcess($value);
-            } elseif (is_array($value) === true && count($array) === 2) {
+            } elseif (is_array($value) === true && count($value) === 2) {
                 $filters[$key] = new RunningFilter();
                 $filters[$key]->setProcess($value[0]);
                 $filters[$key]->setOs($value[1]);
@@ -112,15 +176,19 @@ class Running
      * @param boolean $ignoreCase Ignores case in filters.
      *
      * @return array of pids matching the filters.
+     * @throws \RuntimeException OS not supported.
+     * @throws \RuntimeException Could not retrieve PID list.
+     *
+     * @since 2015-07-30
      */
     public function getPids(array $filters, $ignoreCase = true)
     {
         $filters = $this->transformFilters($filters);
 
-        if ($this->isWindows()) {
+        if ($this->isWindows() === true) {
           // on windows, this command is very slow, and it's filters DO NOT speed it up
             $cmd = 'tasklist /V /FO CSV /NH';
-        } elseif ($this->isLinux()) {
+        } elseif ($this->isLinux() === true) {
           // on linux
             $cmd = 'ps -Ao "%p,%U,%a" --no-headers';
         } else {
@@ -139,17 +207,19 @@ class Running
             if ($this->isWindows() === true) {
                 $splitLine = trim($line, '"');
                 $splitLine = explode('","', $splitLine, 9);
-              /*
-                  0 "Image Name",
-                  1 "PID",
-                  2 "Session Name",
-                  3 "Session#",
-                  4 "Mem Usage",
-                  5 "Status",
-                  6 "User Name",
-                  7 "CPU Time",
-                  8 "Window Title"
-               */
+
+                /*
+                    0 "Image Name",
+                    1 "PID",
+                    2 "Session Name",
+                    3 "Session#",
+                    4 "Mem Usage",
+                    5 "Status",
+                    6 "User Name",
+                    7 "CPU Time",
+                    8 "Window Title"
+                */
+
                 $details = [
                 'os' => $this->os,
                 'user' => $splitLine[6],
@@ -159,11 +229,13 @@ class Running
 
             } elseif ($this->isLinux() === true) {
                 $splitLine = explode(',', $line, 3);
-              /*
-                  0 pid (padded)
-                  1 user (padded)
-                  2 command
-              */
+
+                /*
+                    0 pid (padded)
+                    1 user (padded)
+                    2 command
+                */
+
                 $details = [
                 'os' => $this->os,
                 'user' => trim($splitLine[1]),
@@ -193,9 +265,12 @@ class Running
 
 
     /**
-     * @param integer $pid Pid.
+     * @param string      $pid  Pid.
+     * @param string|null $file File containing pid to delete.
      *
      * @return boolean Success.
+     * @throws \RuntimeException OS not supported.
+     * @throws \RuntimeException Could not execute kill command.
      *
      * @since 2015-07-29
      */
@@ -228,6 +303,13 @@ class Running
     }//end killPid()
 
 
+    /**
+     * @param string $file Filename including path.
+     *
+     * @return string|boolean Pid or false if no file.
+     *
+     * @since 2015-07-30
+     */
     public function getPidFromFile($file)
     {
         if (file_exists($file) === true) {
@@ -239,6 +321,13 @@ class Running
     }//end getPidFromFile()
 
 
+    /**
+     * @param string $file Filename including path.
+     *
+     * @return boolean
+     *
+     * @since 2015-07-30
+     */
     public function killPidFromFile($file)
     {
         $result = $this->killPid($this->getPidFromFile($file), $file);
@@ -246,6 +335,14 @@ class Running
     }//end killPidFromFile()
 
 
+    /**
+     * @param string  $file Filename including path.
+     * @param boolean $kill Current recorded PID.
+     *
+     * @return boolean
+     *
+     * @since 2015-07-30
+     */
     public function claimPidFile($file, $kill = false)
     {
         $pid = $this->getPidFromFile($file);
