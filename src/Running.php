@@ -55,8 +55,8 @@ class Running
      */
     public function __construct($pidFile = null, $unknownOs = self::OS_LINUX)
     {
-        $this->detectOs($unknownOs);
         $this->pidFile = $pidFile;
+        $this->detectOs($unknownOs);
     }//end __construct()
 
 
@@ -279,6 +279,9 @@ class Running
      */
     public function killPid($pid)
     {
+        // we could use posix_kill() for linux
+        // we can also use wmi for windows, see comments: http://php.net/manual/en/function.posix-kill.php
+
         if ($pid === false) {
             return false;
         }
@@ -300,6 +303,27 @@ class Running
 
         return true;
     }//end killPid()
+
+
+    /**
+     * @param string $pid Pid.
+     *
+     * @return boolean Success.
+     *
+     * @since 2015-08-12
+     */
+    public function isActivePid($pid)
+    {
+        $filter = new RunningFilter();
+        $filter->setPid($pid);
+
+        $pids = $this->getPids([$filter]);
+        if (in_array($pid, $pids) === true) {
+            return true;
+        }
+
+        return false;
+    }//end isActivePid()
 
 
     /**
@@ -337,20 +361,26 @@ class Running
 
 
     /**
-     * @param string $file Filename including path.
-     *
      * @return string|boolean Pid or false if no file.
+     * @throws \InvalidArgumentException No pid file specified.
      *
      * @since 2015-07-30
      */
-    public function getPidFromFile($file = null)
+    public function getPidFromFile()
     {
+        $file = $this->pidFile;
         if ($file === null) {
-            $file = $this->pidFile;
+            throw new \InvalidArgumentException('No pid file specified.');
         }
 
         if (file_exists($file) === true) {
             $pid = file_get_contents($file);
+            $pid = intval($pid);
+
+            if ($this->isActivePid($pid) === false) {
+                return false;
+            }
+
             return $pid;
         }
 
@@ -359,27 +389,27 @@ class Running
 
 
     /**
-     * @param string $file Filename including path.
-     *
      * @return boolean
+     * @throws \InvalidArgumentException No pid file specified.
      *
      * @since 2015-07-30
      */
-    public function killPidFromFile($file = null)
+    public function killPidFromFile()
     {
+        $file = $this->pidFile;
         if ($file === null) {
-            $file = $this->pidFile;
+            throw new \InvalidArgumentException('No pid file specified.');
         }
 
-        $pid = $this->getPidFromFile($file);
+        $pid = $this->getPidFromFile();
         if ($pid === false) {
             return false;
         }
 
-        $result = $this->killPid($pid, $file);
+        $result = $this->killPid($pid);
 
         // delete the pid file
-        if ($result === true && $file !== null && file_exists($file) === true) {
+        if ($result === true && file_exists($file) === true) {
             unlink($file);
         }
 
@@ -389,23 +419,24 @@ class Running
 
     /**
      * @param boolean $kill Current recorded PID.
-     * @param string  $file Filename including path.
      *
      * @return boolean
+     * @throws \InvalidArgumentException No pid file specified.
      *
      * @since 2015-07-30
      */
-    public function claimPidFile($kill = false, $file = null)
+    public function claimPidFile($kill = false)
     {
+        $file = $this->pidFile;
         if ($file === null) {
-            $file = $this->pidFile;
+            throw new \InvalidArgumentException('No pid file specified.');
         }
 
-        $pid = $this->getPidFromFile($file);
+        $pid = $this->getPidFromFile();
         if ($pid !== false) {
             if ($kill === true) {
                 $this->killPid($pid);
-            } else {
+            } elseif ($this->isActivePid($pid) === true) {
                 return false;
             }
         }
@@ -421,20 +452,20 @@ class Running
 
 
     /**
-     * @param string $file Filename including path.
-     *
      * @return boolean Success.
+     * @throws \InvalidArgumentException No pid file specified.
      *
      * @since 2015-08-12
      */
-    public function releasePidFile($file = null)
+    public function releasePidFile()
     {
+        $file = $this->pidFile;
         if ($file === null) {
-            $file = $this->pidFile;
+            throw new \InvalidArgumentException('No pid file specified.');
         }
 
         // delete the pid file
-        if ($file !== null && file_exists($file) === true) {
+        if (file_exists($file) === true) {
             unlink($file);
             return true;
         }
