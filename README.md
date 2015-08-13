@@ -7,7 +7,7 @@ Detects if a command or process is currently running and optionally kill it.
 [![Total Downloads](https://img.shields.io/packagist/dt/ofbeaton/command-running.svg)](https://packagist.org/packages/ofbeaton/command-running)
 [![License](https://poser.pugx.org/ofbeaton/command-running/license)](LICENSE)
 
-Current supports:
+Currently supports:
  - Linux
  - Windows
 
