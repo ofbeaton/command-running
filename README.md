@@ -48,44 +48,7 @@ After installing, you can now use it in your code:
 
 ```
 
-More detailed usage, derived from the [Forever Example](examples/forever):
-
-```php
-   // let's say elsewhere you did: php forever.php
-
-   $running = new \Ofbeaton\Command\Running();
-
-   // this should find it in windows and linux
-   // you have to be very careful and specific with the regex or you may inadvertantly grab other processes
-   $filter = new \Ofbeaton\Command\RunningFilter();
-   $filter->setProcess('/php\s+forever\.php/');
-
-   // retrieve all 'php forever.php' processes currently running
-   $pids = $running->getPids([$filter]);
-
-   // kill a specific PID
-   $pid = 7112;
-   $running->killPid($pid);
-
-   // combine a search for processes with killing them
-   $running->claimProcess([$filder], true, true);
-
-   // get the pid from your pidfile
-   $pidfile = 'mypidfile.txt';
-   $running->getPidFromFile($pidfile);
-
-   // kill the pid from your pidfile
-   $pidfile = 'mypidfile.txt';
-   $running->killPidFromFile($pidfile);
-
-   // release our hold on the pidfile
-   $pidfile = 'mypidfile.txt';
-   $running->releasePidFromFile($pidfile);
-
-   // get the pid from the file and kill it
-   $pidfile = 'mypidfile.txt';
-   $running->claimPidFromFile(true, $pidfile);
-```
+For more detailed usage, see the [Forever Example](examples/forever).
 
 ## Support Me
 
