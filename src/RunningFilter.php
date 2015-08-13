@@ -171,14 +171,14 @@ class RunningFilter
             throw new \InvalidArgumentException('Mod `'.$mod.'` is not valid for Field `'.$field.'`.');
         }
 
-        $value = $this->transform($field, $value);
-
-        $this->fields[$field] = $value;
         if ($mod === null) {
             $mod = $this->defaultMods[$field];
         }
-
+        
         $this->mods[$field] = $mod;
+
+        $value = $this->transform($field, $value);
+        $this->fields[$field] = $value;
 
         return $this;
     }//end setField()
