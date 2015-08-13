@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ /**
+  * @since 0.1.0 2015-04-29
+  * @internal {@see https://github.com/pwnraid/bnet/blob/master/phpunit.xml.dist pwnraid fork reference}
+  */
+-->
+
+<phpunit
+        bootstrap="./vendor/autoload.php"
+        beStrictAboutTestsThatDoNotTestAnything="true"
+        checkForUnintentionallyCoveredCode="false"
+        beStrictAboutOutputDuringTests="true"
+        beStrictAboutChangesToGlobalState="true"
+        colors="true">
+    <testsuites>
+        <testsuite name="phptimeago">
+            <directory suffix="Test.php">./tests</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./src</directory>
+        </whitelist>
+    </filter>
+    <logging>
+        <log type="tap" target="logs/report.tap"/>
+        <log type="junit" target="logs/report.junit.xml"/>
+        <log type="coverage-html" target="build/coverage" charset="UTF-8" yui="true" highlight="true"/>
+        <log type="coverage-text" target="logs/coverage.txt"/>
+        <log type="coverage-clover" target="logs/clover.xml"/>
+    </logging>
+</phpunit>

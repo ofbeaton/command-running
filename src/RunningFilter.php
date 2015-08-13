@@ -304,7 +304,7 @@ class RunningFilter
     {
         foreach ($this->validFields as $field) {
             if (isset($details[$field]) === false) {
-                throw new \RuntimeException('The filter did receive a user value for field `'.$field.'`.');
+                throw new \RuntimeException('The filter did receive a value for field `'.$field.'`.');
             } elseif ($this->match($field, $details[$field], $this->getField($field)) === false) {
                 return false;
             }

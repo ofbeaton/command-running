@@ -204,6 +204,11 @@ class Running
         $pids = [];
 
         foreach ($output as $line) {
+            // if we don't skip this, we hang
+            if ($line === '') {
+                continue;
+            }
+
             if ($this->isWindows() === true) {
                 $splitLine = trim($line, '"');
                 $splitLine = explode('","', $splitLine, 9);
@@ -221,10 +226,10 @@ class Running
                 */
 
                 $details = [
-                'os' => $this->os,
-                'user' => $splitLine[6],
-                'process' => $splitLine[0].' '.$splitLine[8],
-                'pid' => $splitLine[1],
+                    'os' => $this->os,
+                    'user' => $splitLine[6],
+                    'process' => $splitLine[0].' '.$splitLine[8],
+                    'pid' => $splitLine[1],
                 ];
 
             } elseif ($this->isLinux() === true) {
@@ -237,10 +242,10 @@ class Running
                 */
 
                 $details = [
-                'os' => $this->os,
-                'user' => trim($splitLine[1]),
-                'process' => $splitLine[2],
-                'pid' => trim($splitLine[0]),
+                    'os' => $this->os,
+                    'user' => trim($splitLine[1]),
+                    'process' => $splitLine[2],
+                    'pid' => trim($splitLine[0]),
                 ];
             }//end if
 
@@ -263,10 +268,8 @@ class Running
     }//end getPids()
 
 
-
     /**
-     * @param string      $pid  Pid.
-     * @param string|null $file File containing pid to delete.
+     * @param string $pid Pid.
      *
      * @return boolean Success.
      * @throws \RuntimeException OS not supported.
@@ -274,7 +277,7 @@ class Running
      *
      * @since 2015-07-29
      */
-    public function killPid($pid, $file = null)
+    public function killPid($pid)
     {
         if ($pid === false) {
             return false;
@@ -295,12 +298,42 @@ class Running
             throw new \RuntimeException('Command `'.$cmd.' did not execute successfully');
         }
 
-        if ($file !== null && file_exists($file) === true) {
-            unlink($file);
+        return true;
+    }//end killPid()
+
+
+    /**
+     * @param array   $filters    Of strings representing filters on the process list.
+     * @param boolean $ignoreCase Ignores case in filters.
+     * @param boolean $kill       Should we kill PIDs we find.
+     *
+     * @return boolean success
+     *
+     * @since 2015-08-12
+     */
+    public function claimProcess(array $filters, $ignoreCase = true, $kill = false)
+    {
+        $pids = $this->getPids($filters, $ignoreCase);
+
+        // we are running and we don't want to kill
+        if ($kill === false && count($pids) > 0) {
+            return false;
+        }
+
+        $success = true;
+        foreach ($pids as $pid) {
+            if ($this->killPid($pid) === false) {
+                $success = false;
+            }
+        }
+
+        // this allowed us to kill as many as possible, so we have the least amount to clean up
+        if ($success === false) {
+            return false;
         }
 
         return true;
-    }//end killPid()
+    }//end claimProcess()
 
 
     /**
@@ -310,8 +343,12 @@ class Running
      *
      * @since 2015-07-30
      */
-    public function getPidFromFile($file)
+    public function getPidFromFile($file = null)
     {
+        if ($file === null) {
+            $file = $this->pidFile;
+        }
+
         if (file_exists($file) === true) {
             $pid = file_get_contents($file);
             return $pid;
@@ -328,23 +365,42 @@ class Running
      *
      * @since 2015-07-30
      */
-    public function killPidFromFile($file)
+    public function killPidFromFile($file = null)
     {
-        $result = $this->killPid($this->getPidFromFile($file), $file);
+        if ($file === null) {
+            $file = $this->pidFile;
+        }
+
+        $pid = $this->getPidFromFile($file);
+        if ($pid === false) {
+            return false;
+        }
+
+        $result = $this->killPid($pid, $file);
+
+        // delete the pid file
+        if ($result === true && $file !== null && file_exists($file) === true) {
+            unlink($file);
+        }
+
         return $result;
     }//end killPidFromFile()
 
 
     /**
-     * @param string  $file Filename including path.
      * @param boolean $kill Current recorded PID.
+     * @param string  $file Filename including path.
      *
      * @return boolean
      *
      * @since 2015-07-30
      */
-    public function claimPidFile($file, $kill = false)
+    public function claimPidFile($kill = false, $file = null)
     {
+        if ($file === null) {
+            $file = $this->pidFile;
+        }
+
         $pid = $this->getPidFromFile($file);
         if ($pid !== false) {
             if ($kill === true) {
@@ -362,4 +418,27 @@ class Running
 
         return true;
     }//end claimPidFile()
+
+
+    /**
+     * @param string $file Filename including path.
+     *
+     * @return boolean Success.
+     *
+     * @since 2015-08-12
+     */
+    public function releasePidFile($file = null)
+    {
+        if ($file === null) {
+            $file = $this->pidFile;
+        }
+
+        // delete the pid file
+        if ($file !== null && file_exists($file) === true) {
+            unlink($file);
+            return true;
+        }
+
+        return false;
+    }//end releasePidFile()
 }//end class

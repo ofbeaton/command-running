@@ -21,7 +21,10 @@
         "phing/phing": "^2.11",        
         "squizlabs/php_codesniffer": "^2.3",
         "mayflower/php-codebrowser": "^1.1",
-        "ofbeaton/granite": "^0"
+        "ofbeaton/granite": "^0",
+        "phpunit/phpunit": "^4.8",
+        "php-mock/php-mock-phpunit": "^0",
+        "humbug/humbug": "^1.0@dev"
     },    
     "autoload": {
         "psr-4": {
