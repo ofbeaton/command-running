@@ -5,3 +5,5 @@
 /build
 /logs
 /phpcs.xml
+/phpunit.xml
+/humbug.json
