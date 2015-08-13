@@ -174,7 +174,7 @@ class RunningFilter
         if ($mod === null) {
             $mod = $this->defaultMods[$field];
         }
-        
+
         $this->mods[$field] = $mod;
 
         $value = $this->transform($field, $value);
