@@ -62,7 +62,7 @@ class RunningTest extends \PHPUnit_Framework_TestCase
 
         $result = $running->claimProcess([$filter], false, true);
         $this->assertTrue($result);
-    }//end testClaimProcessWindows()
+    }//end testClaimProcessKillWindows()
 
 
     /**
@@ -108,5 +108,5 @@ class RunningTest extends \PHPUnit_Framework_TestCase
 
         $result = $running->claimProcess([$filter], false, true);
         $this->assertTrue($result);
-    }//end testClaimProcessLinux()
+    }//end testClaimProcessKillLinux()
 }//end class
