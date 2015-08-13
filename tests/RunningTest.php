@@ -25,7 +25,7 @@ class RunningTest extends \PHPUnit_Framework_TestCase
      *
      * @since 2015-08-12
      */
-    public function testClaimProcessWindows()
+    public function testClaimProcessKillWindows()
     {
         $uname = $this->getFunctionMock('\Ofbeaton\Command', 'php_uname');
         $uname->expects($this->once())->willReturnCallback(
@@ -60,7 +60,7 @@ class RunningTest extends \PHPUnit_Framework_TestCase
         $filter = new RunningFilter();
         $filter->setProcess('/php\s+forever\.php/');
 
-        $result = $running->claimProcess([$filter]);
+        $result = $running->claimProcess([$filter], false, true);
         $this->assertTrue($result);
     }//end testClaimProcessWindows()
 
@@ -71,7 +71,7 @@ class RunningTest extends \PHPUnit_Framework_TestCase
      *
      * @since 2015-08-12
      */
-    public function testClaimProcessLinux()
+    public function testClaimProcessKillLinux()
     {
         $uname = $this->getFunctionMock('\Ofbeaton\Command', 'php_uname');
         $uname->expects($this->once())->willReturnCallback(
@@ -106,7 +106,7 @@ class RunningTest extends \PHPUnit_Framework_TestCase
         $filter = new RunningFilter();
         $filter->setProcess('/php\s+forever\.php/');
 
-        $result = $running->claimProcess([$filter]);
+        $result = $running->claimProcess([$filter], false, true);
         $this->assertTrue($result);
     }//end testClaimProcessLinux()
-}
+}//end class
