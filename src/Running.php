@@ -281,7 +281,6 @@ class Running
     {
         // we could use posix_kill() for linux
         // we can also use wmi for windows, see comments: http://php.net/manual/en/function.posix-kill.php
-
         if ($pid === false) {
             return false;
         }
