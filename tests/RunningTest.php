@@ -94,7 +94,7 @@ class RunningTest extends \PHPUnit_Framework_TestCase
                     $output = file_get_contents(__DIR__.'/fixtures/linux_forever.txt');
                     $output = explode("\n", $output);
                     $returnVar = 0;
-                } elseif ($pid === 14397 && $command === 'kill -9 14397 2>&1') {
+                } elseif ($pid === 14397 && $command === 'kill -9 -14397 2>&1') {
                     $returnVar = 0;
                 } else {
                     throw new \RuntimeException('unexpected call to exec: '.$command);
