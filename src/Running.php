@@ -289,7 +289,7 @@ class Running
             $cmd = 'taskkill /PID '.$pid;
         } elseif ($this->isLinux() === true) {
             // on linux
-            $cmd = 'kill -9 -'.$pid.' 2>&1';
+            $cmd = 'kill -9 '.$pid.' 2>&1';
         } else {
             throw new \RuntimeException('os `'.$this->osRaw.'` is not supported by method `killPid`');
         }
