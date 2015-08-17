@@ -33,7 +33,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Ofbeaton\\Command\\Tests\\": "tests"
+            "Ofbeaton\\Command\\Tests\\": "tests",
+            "Ofbeaton\\Command\\Tests\\Mocks\\": "tests/Mocks"
         }
     },
     "config": {
