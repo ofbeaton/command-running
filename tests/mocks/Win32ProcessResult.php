@@ -18,7 +18,7 @@ class Win32ProcessResult
     // @codingStandardsIgnoreStart
     /**
      * @return void
-     * 
+     *
      * @since 2015-08-16
      */
     public function Terminate()
