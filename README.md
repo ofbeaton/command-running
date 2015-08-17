@@ -41,7 +41,7 @@ After installing, you can now use it in your code:
         exit;
     }
 
-    // ... your code
+    // your code
 
     // at the end of your program
     $running->releasePidFile();
