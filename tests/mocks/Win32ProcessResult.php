@@ -8,6 +8,11 @@ namespace Ofbeaton\Command\Tests\Mocks;
  */
 class Win32ProcessResult
 {
+
+    /**
+     * @var boolean
+     * @since 2015-08-16
+     */
     public $terminate = false;
 
     // @codingStandardsIgnoreStart
