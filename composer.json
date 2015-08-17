@@ -28,13 +28,13 @@
     },    
     "autoload": {
         "psr-4": {
+            "Ofbeaton\\Command\\Tests\\Mocks\\": "tests/Mocks",
+            "Ofbeaton\\Command\\Tests\\": "tests",
             "Ofbeaton\\Command\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Ofbeaton\\Command\\Tests\\": "tests",
-            "Ofbeaton\\Command\\Tests\\Mocks\\": "tests/Mocks"
         }
     },
     "config": {
