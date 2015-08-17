@@ -4,7 +4,6 @@ namespace Ofbeaton\Command\Tests;
 
 use Ofbeaton\Command\Running;
 use Ofbeaton\Command\RunningFilter;
-use Ofbeaton\Command\Tests\Mocks\WmiTerminateMock;
 use phpmock\phpunit\PHPMock;
 
 /**
@@ -58,7 +57,7 @@ class RunningTest extends \PHPUnit_Framework_TestCase
         );
 
         $running = new Running();
-        $wmi = new WmiTerminateMock();
+        $wmi = new Mocks\WmiTerminateMock();
         $running->setCom($wmi);
 
         $filter = new RunningFilter();
