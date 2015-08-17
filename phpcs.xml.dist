@@ -4,7 +4,9 @@
 
     <file>src</file>
     <file>tests</file>
-    
+
+    <exclude-pattern>./tests/bootstrap.php</exclude-pattern>
+
     <arg name="extensions" value="php"/>  
         
     <rule ref="phpcs/command-running"/>           
