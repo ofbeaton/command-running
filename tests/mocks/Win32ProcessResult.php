@@ -16,6 +16,11 @@ class Win32ProcessResult
     public $terminate = false;
 
     // @codingStandardsIgnoreStart
+    /**
+     * @return void
+     * 
+     * @since 2015-08-16
+     */
     public function Terminate()
     {
         // @codingStandardsIgnoreEnd
