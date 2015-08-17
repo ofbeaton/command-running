@@ -57,11 +57,16 @@ class RunningTest extends \PHPUnit_Framework_TestCase
         );
 
         $running = new Running();
+        $wmi = new \Ofbeaton\Command\Tests\Mocks\WmiTerminateMock();
+        $running->setCom($wmi);
+
         $filter = new RunningFilter();
-        $filter->setProcess('/php\s+forever\.php/');
+        $filter->setCommand('/php\s+forever\.php/');
 
         $result = $running->claimProcess([$filter], false, true);
         $this->assertTrue($result);
+
+        $this->assertTrue($wmi->results[0]->terminate);
     }//end testClaimProcessKillWindows()
 
 
@@ -89,12 +94,12 @@ class RunningTest extends \PHPUnit_Framework_TestCase
             function ($command, &$output, &$returnVar) {
                 static $pid = null;
 
-                if ($pid === null && $command === 'ps -Ao "%p,%U,%a" --no-headers') {
+                if ($pid === null && strpos($command, 'ps ') === 0) {
                     $pid = 14397;
                     $output = file_get_contents(__DIR__.'/fixtures/linux_forever.txt');
                     $output = explode("\n", $output);
                     $returnVar = 0;
-                } elseif ($pid === 14397 && $command === 'kill -9 14397 2>&1') {
+                } elseif ($pid === 14397 && strpos($command, 'kill ') === 0 && strpos($command, '12688') !== false) {
                     $returnVar = 0;
                 } else {
                     throw new \RuntimeException('unexpected call to exec: '.$command);
@@ -104,7 +109,7 @@ class RunningTest extends \PHPUnit_Framework_TestCase
 
         $running = new Running();
         $filter = new RunningFilter();
-        $filter->setProcess('/php\s+forever\.php/');
+        $filter->setCommand('/php\s+forever\.php/');
 
         $result = $running->claimProcess([$filter], false, true);
         $this->assertTrue($result);

@@ -1,12 +1,11 @@
 <?php
 
-require 'Running.php';
-require 'RunningFilter.php';
+require '../../vendor/autoload.php';
 
 $running = new \Ofbeaton\Command\Running();
 
 $filter = new \Ofbeaton\Command\RunningFilter();
-$filter->setProcess('/php\s+forever\.php/');
+$filter->setCommand('/php\s+forever\.php/');
 
 $cmdStart = microtime(true);
 $pids = $running->getPids([$filter]);
@@ -17,9 +16,9 @@ $cmdStop = microtime(true);
 echo 'list: '.round(($cmdStop - $cmdStart), 4).PHP_EOL;
 
 
-foreach ($pids as $pid) {
+foreach ($pids as $pid => $details) {
     $cmdStart = microtime(true);
-    $running->killPid($pid);
+    $running->killGroup($details['group']);
     $cmdStop = microtime(true);
   // windows: 0.28
   // linux:   0.0044

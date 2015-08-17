@@ -29,8 +29,9 @@ class RunningFilter
     protected $validFields = [
         'os',
         'pid',
+        'group',
         'user',
-        'process',
+        'command',
     ];
 
     /**
@@ -46,11 +47,15 @@ class RunningFilter
             '=',
             '!',
         ],
+        'group' => [
+            '=',
+            '!',
+        ],
         'user' => [
             '=',
             '!',
         ],
-        'process' => [
+        'command' => [
             '=',
             '!',
             '~=',
@@ -65,8 +70,9 @@ class RunningFilter
     protected $defaultMods = [
         'os' => '=',
         'pid' => '=',
+        'group' => '=',
         'user' => '=',
-        'process' => '~=',
+        'command' => '~=',
     ];
 
     /**
@@ -76,8 +82,9 @@ class RunningFilter
     protected $autoRegEx = [
         'os' => true,
         'pid' => true,
+        'group' => true,
         'user' => true,
-        'process' => false,
+        'command' => false,
     ];
 
 
@@ -239,30 +246,57 @@ class RunningFilter
 
 
     /**
-     * @return mixed Process.
+     * @return int Value of Process Group field.
      *
-     * @since 2015-07-30
+     * @since 2015-08-16
      */
-    public function getProcess()
+    public function getGroup()
     {
-        $result = $this->getField('process');
+        $result = $this->getField('group');
         return $result;
-    }//end getProcess()
+    }//end getGroup()
 
 
     /**
-     * @param string $process Process.
+     * @param string $group New Value.
+     * @param string $mod   Mod on Process Group field.
+     *
+     * @return $this
+     *
+     * @since 2015-08-16
+     */
+    public function setGroup($group, $mod = null)
+    {
+        $this->setField('group', $group, $mod);
+        return $this;
+    }//end setGroup()
+
+
+    /**
+     * @return mixed Command.
+     *
+     * @since 2015-08-16
+     */
+    public function getCommand()
+    {
+        $result = $this->getField('command');
+        return $result;
+    }//end getCommand()
+
+
+    /**
+     * @param string $command Command.
      * @param string $mod     Mod.
      *
      * @return $this
      *
-     * @since 2015-07-30
+     * @since 2015-08-16
      */
-    public function setProcess($process, $mod = null)
+    public function setCommand($command, $mod = null)
     {
-        $this->setField('process', $process, $mod);
+        $this->setField('command', $command, $mod);
         return $this;
-    }//end setProcess()
+    }//end setCommand()
 
 
     /**

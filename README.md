@@ -60,4 +60,4 @@ Everyone's time should be valuable, please consider donating.
 
 ## License
 
-This software is distributed under the LGPL 2.1 License. Please see [License file](LICENSE) for more information.
+This software is distributed under the MIT License. Please see [License file](LICENSE) for more information.

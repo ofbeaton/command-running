@@ -46,6 +46,12 @@ class Running
      */
     protected $pidFile = null;
 
+    /**
+     * @var \COM
+     * @since 2015-08-15
+     */
+    protected $com = null;
+
 
     /**
      * @param string $pidFile   Filename and path to PID file.
@@ -84,6 +90,20 @@ class Running
 
         return false;
     }//end isWindows()
+
+
+    /**
+     * @param object $com The \COM interface.
+     *
+     * @return $this
+     *
+     * @since 2015-08-16
+     */
+    public function setCom($com)
+    {
+        $this->com = $com;
+        return $this;
+    }//end setCom()
 
 
     /**
@@ -157,10 +177,10 @@ class Running
         foreach ($filters as $key => $value) {
             if (is_string($value) === true) {
                 $filters[$key] = new RunningFilter();
-                $filters[$key]->setProcess($value);
+                $filters[$key]->setCommand($value);
             } elseif (is_array($value) === true && count($value) === 2) {
                 $filters[$key] = new RunningFilter();
-                $filters[$key]->setProcess($value[0]);
+                $filters[$key]->setCommand($value[0]);
                 $filters[$key]->setOs($value[1]);
             } elseif (($value instanceof RunningFilter) === false) {
                 throw new \InvalidArgumentException('filter `'.$value.'` is invalid.');
@@ -177,7 +197,6 @@ class Running
      *
      * @return array of pids matching the filters.
      * @throws \RuntimeException OS not supported.
-     * @throws \RuntimeException Could not retrieve PID list.
      *
      * @since 2015-07-30
      */
@@ -185,15 +204,42 @@ class Running
     {
         $filters = $this->transformFilters($filters);
 
-        if ($this->isWindows() === true) {
-          // on windows, this command is very slow, and it's filters DO NOT speed it up
-            $cmd = 'tasklist /V /FO CSV /NH';
-        } elseif ($this->isLinux() === true) {
-          // on linux
-            $cmd = 'ps -Ao "%p,%U,%a" --no-headers';
-        } else {
+        $method = 'getPids'.ucfirst($this->os);
+        if (method_exists($this, $method) === false) {
             throw new \RuntimeException('os `'.$this->osRaw.'` is not supported by method `getPids`');
         }
+
+        $pids = $this->$method($filters, $ignoreCase);
+
+        return $pids;
+    }//end getPids()
+
+
+    /**
+     * @param array   $filters    Of strings representing filters on the process list.
+     * @param boolean $ignoreCase Ignores case in filters.
+     *
+     * @return array of pids matching the filters.
+     * @throws \RuntimeException OS not supported.
+     * @throws \RuntimeException Could not retrieve PID list.
+     *
+     * @since 2015-08-16
+     */
+    protected function getPidsWindows(array $filters, $ignoreCase = true)
+    {
+        /*
+            Should note that WMI GetOwner() retval parameters do not seem to work, so we can't use WMI for this yet
+            WMI also requires the COM_DOTNET windows php extension.
+            we might be able to use wmic command, wmic process get processid,parentprocessid,commandline /format:rawxml
+            but we would also need to do a wmic call GetOwner for EVERY process. This is not cool.
+            we could also combine both to get the username,
+                maybe tasklist can be made fast if only getting pid and username?
+            get-process is also powershell only, so won't work with exec,
+                though we might be able to pipe through the 'powershell' command.
+        */
+
+        // on windows, this command is very slow, and it's filters DO NOT speed it up
+        $cmd = 'tasklist /V /FO CSV /NH';
 
         exec($cmd, $output, $returnVal);
 
@@ -209,45 +255,28 @@ class Running
                 continue;
             }
 
-            if ($this->isWindows() === true) {
-                $splitLine = trim($line, '"');
-                $splitLine = explode('","', $splitLine, 9);
+            $splitLine = trim($line, '"');
+            $splitLine = explode('","', $splitLine, 9);
 
-                /*
-                    0 "Image Name",
-                    1 "PID",
-                    2 "Session Name",
-                    3 "Session#",
-                    4 "Mem Usage",
-                    5 "Status",
-                    6 "User Name",
-                    7 "CPU Time",
-                    8 "Window Title"
-                */
+            /*
+                0 "Image Name",
+                1 "PID",
+                2 "Session Name",
+                3 "Session#",
+                4 "Mem Usage",
+                5 "Status",
+                6 "User Name",
+                7 "CPU Time",
+                8 "Window Title"
+            */
 
-                $details = [
-                    'os' => $this->os,
-                    'user' => $splitLine[6],
-                    'process' => $splitLine[0].' '.$splitLine[8],
-                    'pid' => $splitLine[1],
-                ];
-
-            } elseif ($this->isLinux() === true) {
-                $splitLine = explode(',', $line, 3);
-
-                /*
-                    0 pid (padded)
-                    1 user (padded)
-                    2 command
-                */
-
-                $details = [
-                    'os' => $this->os,
-                    'user' => trim($splitLine[1]),
-                    'process' => $splitLine[2],
-                    'pid' => trim($splitLine[0]),
-                ];
-            }//end if
+            $details = [
+                'os' => $this->os,
+                'user' => $splitLine[6],
+                'command' => $splitLine[0].' '.$splitLine[8],
+                'pid' => intval($splitLine[1]),
+                'group' => intval($splitLine[1]), // fake it
+            ];
 
             $ok = true;
             foreach ($filters as $filter) {
@@ -261,12 +290,75 @@ class Running
                 continue;
             }
 
-            $pids[] = intval($details['pid']);
+            $pids[$details['pid']] = $details;
         }//end foreach
 
         return $pids;
-    }//end getPids()
+    }//end getPidsWindows()
 
+
+    /**
+     * @param array   $filters    Of strings representing filters on the process list.
+     * @param boolean $ignoreCase Ignores case in filters.
+     *
+     * @return array of pids matching the filters.
+     * @throws \RuntimeException OS not supported.
+     * @throws \RuntimeException Could not retrieve PID list.
+     *
+     * @since 2015-08-16
+     */
+    protected function getPidsLinux(array $filters, $ignoreCase = true)
+    {
+        $cmd = 'ps -Ao "%p,%r,%U,%a" --no-headers';
+
+        exec($cmd, $output, $returnVal);
+
+        if ($returnVal !== 0) {
+            throw new \RuntimeException('Command `'.$cmd.' did not execute successfully');
+        }
+
+        $pids = [];
+
+        foreach ($output as $line) {
+            // if we don't skip this, we hang
+            if ($line === '') {
+                continue;
+            }
+
+            $splitLine = explode(',', $line, 4);
+
+            /*
+                0 pid (padded)
+                1 group (padded)
+                2 user (padded)
+                3 command
+            */
+
+            $details = [
+                'os' => $this->os,
+                'pid' => intval(trim($splitLine[0])),
+                'group' => intval(trim($splitLine[1])),
+                'user' => trim($splitLine[2]),
+                'command' => $splitLine[3],
+            ];
+
+            $ok = true;
+            foreach ($filters as $filter) {
+                if ($filter->isOk($details) === false) {
+                    $ok = false;
+                    break;
+                }
+            }
+
+            if ($ok === false) {
+                continue;
+            }
+
+            $pids[$details['pid']] = $details;
+        }//end foreach
+
+        return $pids;
+    }//end getPidsLinux()
 
     /**
      * @param string $pid Pid.
@@ -305,24 +397,72 @@ class Running
 
 
     /**
-     * @param string $pid Pid.
+     * @param string $group Process group id.
      *
      * @return boolean Success.
+     * @throws \RuntimeException OS not supported.
+     * @throws \RuntimeException Could not execute kill command.
      *
-     * @since 2015-08-12
+     * @since 2015-08-16
      */
-    public function isActivePid($pid)
+    public function killGroup($group)
+    {
+        if ($group === false || $group === 0) {
+            return false;
+        }
+
+        if ($this->isWindows() === true) {
+            // PHP needs to have the COM DOTNET extension enabled for this
+            if ($this->com !== null || class_exists('\COM') === true) {
+                if ($this->com === null) {
+                    $wmi = new \COM("winmgmts:{impersonationLevel=impersonate}!\\\\.\\root\\cimv2");
+                } else {
+                    $wmi = $this->com;
+                }
+
+                $procs = $wmi->ExecQuery("SELECT * FROM Win32_Process WHERE ParentProcessId = '" . $group . "'");
+                foreach ($procs as $proc) {
+                    $proc->Terminate();
+                }
+            }
+
+            $this->killPid($group);
+        } elseif ($this->isLinux() === true) {
+            // on linux
+            $cmd = 'kill -9 -'.$group.' 2>&1';
+
+            exec($cmd, $output, $returnVal);
+
+            if ($returnVal !== 0) {
+                throw new \RuntimeException('Command `'.$cmd.' did not execute successfully');
+            }
+        } else {
+            throw new \RuntimeException('os `'.$this->osRaw.'` is not supported by method `killGroup`');
+        }//end if
+
+        return true;
+    }//end killGroup()
+
+
+    /**
+     * @param string $pid Pid.
+     *
+     * @return array|boolean False on Failure or array details on success.
+     *
+     * @since 2015-08-15
+     */
+    public function getPid($pid)
     {
         $filter = new RunningFilter();
         $filter->setPid($pid);
 
         $pids = $this->getPids([$filter]);
-        if (in_array($pid, $pids) === true) {
-            return true;
+        if (isset($pids[$pid]) === true) {
+            return $pids[$pid];
         }
 
         return false;
-    }//end isActivePid()
+    }//end getPid()
 
 
     /**
@@ -344,8 +484,8 @@ class Running
         }
 
         $success = true;
-        foreach ($pids as $pid) {
-            if ($this->killPid($pid) === false) {
+        foreach ($pids as $pid => $details) {
+            if ($this->killGroup($details['group']) === false) {
                 $success = false;
             }
         }
@@ -360,7 +500,7 @@ class Running
 
 
     /**
-     * @return string|boolean Pid or false if no file.
+     * @return array|boolean Details or false if no file.
      * @throws \InvalidArgumentException No pid file specified.
      *
      * @since 2015-07-30
@@ -376,11 +516,13 @@ class Running
             $pid = file_get_contents($file);
             $pid = intval($pid);
 
-            if ($this->isActivePid($pid) === false) {
+
+            $details = $this->getPid($pid);
+            if ($details === false) {
                 return false;
             }
 
-            return $pid;
+            return $details;
         }
 
         return false;
@@ -400,12 +542,12 @@ class Running
             throw new \InvalidArgumentException('No pid file specified.');
         }
 
-        $pid = $this->getPidFromFile();
-        if ($pid === false) {
+        $details = $this->getPidFromFile();
+        if ($details === false) {
             return false;
         }
 
-        $result = $this->killPid($pid);
+        $result = $this->killGroup($details['group']);
 
         // delete the pid file
         if ($result === true && file_exists($file) === true) {
@@ -431,11 +573,11 @@ class Running
             throw new \InvalidArgumentException('No pid file specified.');
         }
 
-        $pid = $this->getPidFromFile();
-        if ($pid !== false) {
-            if ($kill === true) {
-                $this->killPid($pid);
-            } elseif ($this->isActivePid($pid) === true) {
+        $details = $this->getPidFromFile();
+        if ($details !== false) {
+            if ($kill === true && $details !== false) {
+                $this->killGroup($details['group']);
+            } elseif ($details !== false) {
                 return false;
             }
         }
