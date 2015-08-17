@@ -27,7 +27,7 @@ class WmiTerminateMock
         // @codingStandardsIgnoreEnd
 
         if ($query === "SELECT * FROM Win32_Process WHERE ParentProcessId = '7212'") {
-            $process1 = new Win32ProcessResult();
+            $process1 = new Win32ProcessResultMock();
             $this->results[] = $process1;
             return $this->results;
         }

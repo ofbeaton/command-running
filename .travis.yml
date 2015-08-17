@@ -22,7 +22,7 @@ install:
   - bin/phing dist
 
 script:
-  - bin/phpunit --bootstrap "./vendor/autoload.php" --coverage-text --coverage-clover=coverage.clover
+  - bin/phpunit --coverage-text --coverage-clover=coverage.clover
   - bin/phpcs 
 
 after_script:

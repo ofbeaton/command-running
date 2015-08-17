@@ -6,7 +6,7 @@ namespace Ofbeaton\Command\Tests\Mocks;
  * Class Win32ProcessResult
  * @since 2015-08-16
  */
-class Win32ProcessResult
+class Win32ProcessResultMock
 {
 
     /**
