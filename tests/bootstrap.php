@@ -13,13 +13,17 @@
  * will internally compress text anyways, and the delta may save space in the end. The largest file is blacksmith
  * at 4MB which is not that bad really.
  *
- * @see phpunit.xml.dist
+ * @see      phpunit.xml.dist
  * @internal {@see https://github.com/pwnraid/bnet/blob/master/test/Bootstrap.php pwnraid fork reference}
- * @since 0.1.0 2015-04-29
+ * @since    0.1.0 2015-04-29
  */
 
-if (!@include_once __DIR__ . '/../vendor/autoload.php') {
-    exit('You must set up the project dependencies, run the following commands:'.PHP_EOL
+// @codingStandardsIgnoreStart
+$include = @require_once __DIR__.'/../vendor/autoload.php';
+// @codingStandardsIgnoreEnd
+if ($include !== true) {
+    exit(
+        'You must set up the project dependencies, run the following commands:'.PHP_EOL
         .'> wget http://getcomposer.org/composer.phar\n> php composer.phar install'.PHP_EOL
     );
 }

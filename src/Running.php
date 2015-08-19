@@ -420,7 +420,7 @@ class Running
                     $wmi = $this->com;
                 }
 
-                $procs = $wmi->ExecQuery("SELECT * FROM Win32_Process WHERE ParentProcessId = '" . $group . "'");
+                $procs = $wmi->ExecQuery("SELECT * FROM Win32_Process WHERE ParentProcessId = '".$group."'");
                 foreach ($procs as $proc) {
                     $proc->Terminate();
                 }
