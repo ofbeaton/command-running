@@ -27,65 +27,65 @@ class RunningFilter
      * @since 2015-07-30
      */
     protected $validFields = [
-        'os',
-        'pid',
-        'group',
-        'user',
-        'command',
-    ];
+                              'os',
+                              'pid',
+                              'group',
+                              'user',
+                              'command',
+                             ];
 
     /**
      * @var array
      * @since 2015-07-30
      */
     protected $validMods = [
-        'os' => [
-            '=',
-            '!',
-        ],
-        'pid' => [
-            '=',
-            '!',
-        ],
-        'group' => [
-            '=',
-            '!',
-        ],
-        'user' => [
-            '=',
-            '!',
-        ],
-        'command' => [
-            '=',
-            '!',
-            '~=',
-            '~!',
-        ],
-    ];
+                            'os'      => [
+                                          '=',
+                                          '!',
+                                         ],
+                            'pid'     => [
+                                          '=',
+                                          '!',
+                                         ],
+                            'group'   => [
+                                          '=',
+                                          '!',
+                                         ],
+                            'user'    => [
+                                          '=',
+                                          '!',
+                                         ],
+                            'command' => [
+                                          '=',
+                                          '!',
+                                          '~=',
+                                          '~!',
+                                         ],
+                           ];
 
     /**
      * @var array
      * @since 2015-07-30
      */
     protected $defaultMods = [
-        'os' => '=',
-        'pid' => '=',
-        'group' => '=',
-        'user' => '=',
-        'command' => '~=',
-    ];
+                              'os'      => '=',
+                              'pid'     => '=',
+                              'group'   => '=',
+                              'user'    => '=',
+                              'command' => '~=',
+                             ];
 
     /**
      * @var array
      * @since 2015-07-30
      */
     protected $autoRegEx = [
-        'os' => true,
-        'pid' => true,
-        'group' => true,
-        'user' => true,
-        'command' => false,
-    ];
+                            'os'      => true,
+                            'pid'     => true,
+                            'group'   => true,
+                            'user'    => true,
+                            'command' => false,
+                           ];
 
 
     /**

@@ -24,9 +24,9 @@ class Running
      * @since 2015-07-30
      */
     protected $supportedOs = [
-        self::OS_LINUX,
-        self::OS_WINDOWS,
-    ];
+                              self::OS_LINUX,
+                              self::OS_WINDOWS,
+                             ];
 
     /**
      * @var null
@@ -271,12 +271,12 @@ class Running
             */
 
             $details = [
-                'os' => $this->os,
-                'user' => $splitLine[6],
-                'command' => $splitLine[0].' '.$splitLine[8],
-                'pid' => intval($splitLine[1]),
-                'group' => intval($splitLine[1]), // fake it
-            ];
+                        'os'      => $this->os,
+                        'user'    => $splitLine[6],
+                        'command' => $splitLine[0].' '.$splitLine[8],
+                        'pid'     => intval($splitLine[1]),
+                        'group'   => intval($splitLine[1]), // fake it
+                       ];
 
             $ok = true;
             foreach ($filters as $filter) {
@@ -335,12 +335,12 @@ class Running
             */
 
             $details = [
-                'os' => $this->os,
-                'pid' => intval(trim($splitLine[0])),
-                'group' => intval(trim($splitLine[1])),
-                'user' => trim($splitLine[2]),
-                'command' => $splitLine[3],
-            ];
+                        'os'      => $this->os,
+                        'pid'     => intval(trim($splitLine[0])),
+                        'group'   => intval(trim($splitLine[1])),
+                        'user'    => trim($splitLine[2]),
+                        'command' => $splitLine[3],
+                       ];
 
             $ok = true;
             foreach ($filters as $filter) {
