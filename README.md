@@ -15,7 +15,11 @@ Please note that `getPids()` on windows is slow (2 seconds). There may be a way 
 
 ## Alternatives
 
-If you don't need advanced features, you can use the [Symfony Lock component and trait](https://symfony.com/doc/master/console/lockable_trait.html) in any application, even non-symfony ones. It is actively maintained and is likely more up to date. It supports filesystem (FlockStore), shared memory (SemaphoreStore) and even databases and Redis servers. It does not support force claims, kills, or reports.
+If you don't need advanced features, you can use the [Symfony Lock component and trait](https://symfony.com/doc/master/console/lockable_trait.html) in any application, even non-symfony ones. It is actively maintained and is likely more up to date. 
+
+It supports filesystem (FlockStore), shared memory (SemaphoreStore) and even databases and Redis servers. 
+
+It does not support force claims, kills, or reports.
 
 ## Installing via Composer
 
