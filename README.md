@@ -21,6 +21,12 @@ It supports filesystem (FlockStore), shared memory (SemaphoreStore) and even dat
 
 It does not support force claims, kills, or reports.
 
+## Updates
+
+This is a project used in corporate applications. As such, the author is unlikely to update it on a regular basis, but instead when the corporate applications that use it run into problems with it. As such you should expect updates in the 5-10yr range. 
+
+Issues and PRs will be monitored, and we will continue to work with the community to provide timely updates as they are contributed.
+
 ## Installing via Composer
 
 The recommended way to install Command Running is through
