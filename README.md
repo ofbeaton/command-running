@@ -13,6 +13,10 @@ Currently supports:
 
 Please note that windows `getPids()` is slow (2 seconds). There may be a way to speed it up using `WMI` in the future.
 
+## Alternatives
+
+If you don't need advanced features, you can use the [Symfony Lock component and trait](https://symfony.com/doc/master/console/lockable_trait.html) in any application, even non-symfony ones. It is actively maintained and is likely more up to date. It supports filesystem (FlockStore), shared memory (SemaphoreStore) and even databases and Redis servers. It does not support force claims, kills, or reports.
+
 ## Installing via Composer
 
 The recommended way to install Command Running is through
@@ -49,14 +53,6 @@ After installing, you can now use it in your code:
 ```
 
 For more detailed usage, see the [Forever Example](examples/forever).
-
-## Support Me
-
-Hi, I'm Finlay Beaton ([@ofbeaton](https://github.com/ofbeaton)). This software is made possible by donations of fellow users like you, encouraging me to toil the midnight hours away and sweat into the code and documentation. 
-
-Everyone's time should be valuable, please consider donating.
-
-[Donate through Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=RDWQCGL5UD6DS&lc=CA&item_name=ofbeaton&item_number=commandrunning&currency_code=CAD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
 
 ## License
 
