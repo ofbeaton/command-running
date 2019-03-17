@@ -11,7 +11,7 @@ Currently supports:
  - Linux
  - Windows
 
-Please note that windows `getPids()` is slow (2 seconds). There may be a way to speed it up using `WMI` in the future.
+Please note that `getPids()` on windows is slow (2 seconds). There may be a way to speed it up using `WMI` in the future.
 
 ## Alternatives
 
