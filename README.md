@@ -23,9 +23,11 @@ It does not support force claims, kills, or reports.
 
 ## Updates
 
-This is a project used in corporate applications. As such, the author is unlikely to update it on a regular basis, but instead when the corporate applications that use it run into problems with it. As such you should expect updates in the 5-10yr range. 
+The project is considered in a usable state and feature complete.
 
-Issues and PRs will be monitored, and we will continue to work with the community to provide timely updates as they are contributed.
+This project is used in corporate applications. As such, the authors are unlikely to update it on a regular basis, but instead when the corporate applications that use it run into problems. You should expect updates in the 5-10yr range. 
+
+Issues and PRs will be monitored, and we will continue to work with the community to provide updates as they are contributed.
 
 ## Installing via Composer
 
